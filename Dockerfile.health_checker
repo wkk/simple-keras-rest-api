@@ -1,0 +1,11 @@
+from python:3.8
+
+WORKDIR /app
+
+RUN pip install flask requests
+
+ADD dog.jpg /app
+
+ADD health_check.py /app
+
+ENTRYPOINT [ "python", "health_check.py" ]
