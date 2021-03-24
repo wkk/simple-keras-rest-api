@@ -62,7 +62,7 @@ def generate(addr: str, number_of_requests: int, rate: float):
             time.sleep(interarrival_times[i])
             futures.append(executor.submit(request, i))
 
-    with open(f"{time.strftime('%Y%m%d-%H%M%S')}.txt", "w") as fout:
+    with open(f"/output/{time.strftime('%Y%m%d-%H%M%S')}.txt", "w") as fout:
         for future in futures:
             print(future.result(), file=fout)
 
