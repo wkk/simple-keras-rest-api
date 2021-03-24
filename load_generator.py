@@ -50,7 +50,7 @@ def generate(addr: str, number_of_requests: int, rate: float):
             "request_index": request_index,
             "start": time.time()
         }
-        r = requests.post(predict_url, payload).json()
+        r = requests.post(predict_url, files=payload).json()
         data["end"] = time.time()
         data["success"] = r["success"]
         data["service_time"] = r["service_time"]
