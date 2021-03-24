@@ -76,3 +76,4 @@ if __name__ == "__main__":
     addr = sys.argv[1]
     number_of_requests = int(sys.argv[2])
     rate = float(sys.argv[3])
+    generate(addr, number_of_requests, rate)
