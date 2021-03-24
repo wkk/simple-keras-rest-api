@@ -26,7 +26,7 @@ def generate_interarrival_times(number_of_requests: int, rate: float):
         return -math.log(1 - x) / rate
 
     rng = np.random.default_rng()
-    return [exponential_reverse_cdf(x) for x in rng.ramdom(number_of_requests)]
+    return [exponential_reverse_cdf(x) for x in rng.random(number_of_requests)]
 
 
 def health_check(addr: str) -> None:
