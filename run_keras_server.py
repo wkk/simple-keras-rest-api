@@ -13,7 +13,10 @@ from keras.applications import imagenet_utils
 from PIL import Image
 import numpy as np
 import flask
+from flask import g
 import io
+import time
+import json
 
 # initialize our Flask application and the Keras model
 app = flask.Flask(__name__)
@@ -39,6 +42,17 @@ def prepare_image(image, target):
 
 	# return the processed image
 	return image
+
+@app.before_request
+def before_request():
+	g.start = time.time()
+
+@app.after_request
+def after_request(response):
+	data = response.get_json()
+	data["service_time"] = time.time() - g.start
+	response.set_data(json.dumps(data))
+	return response
 
 @app.route("/predict", methods=["POST"])
 def predict():
