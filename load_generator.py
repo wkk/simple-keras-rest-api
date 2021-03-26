@@ -50,10 +50,10 @@ def generate(addr: str, number_of_requests: int, rate: float):
             "request_index": request_index,
             "start": time.time()
         }
-        r = requests.post(predict_url, files=payload).json()
+        r = requests.post(predict_url, files=payload)
         data["end"] = time.time()
-        data["success"] = r["success"]
-        data["service_time"] = r["service_time"]
+        data["status_code"] = r.status_code
+        data["response_text"] = r.text
         return data
 
     futures = []
@@ -62,7 +62,7 @@ def generate(addr: str, number_of_requests: int, rate: float):
             time.sleep(interarrival_times[i])
             futures.append(executor.submit(request, i))
 
-    with open(f"/output/{time.strftime('%Y%m%d-%H%M%S')}.txt", "w") as fout:
+    with open(f"output/{time.strftime('%H%M%S')}-{number_of_requests}-{rate}.txt", "w") as fout:
         for future in futures:
             print(future.result(), file=fout)
 
