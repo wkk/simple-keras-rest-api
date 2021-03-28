@@ -1,7 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
 import math
 from multiprocessing import cpu_count
+import operator
 import os
+import queue
 import random
 import sys
 import time
@@ -10,15 +12,13 @@ import numpy as np
 import requests
 
 test_image_dir = "testSet"
+addr: str = None
 
-
-def load_images():
-    images = []
-    print("loading images...")
-    for file in os.listdir(test_image_dir):
-        images.append(open(os.path.join(test_image_dir, file), "rb").read())
-    print("images loaded")
-    return images
+images = []
+print("loading images...")
+for file in os.listdir(test_image_dir):
+    images.append(open(os.path.join(test_image_dir, file), "rb").read())
+print("images loaded")
 
 
 def generate_interarrival_times(number_of_requests: int, rate: float):
@@ -29,7 +29,7 @@ def generate_interarrival_times(number_of_requests: int, rate: float):
     return [exponential_reverse_cdf(x) for x in rng.random(number_of_requests)]
 
 
-def health_check(addr: str) -> None:
+def health_check() -> None:
     health_check_rul = f"http://{addr}/check"
     r = requests.get(health_check_rul).json()
     if not r["healthy"]:
@@ -37,36 +37,32 @@ def health_check(addr: str) -> None:
         raise AssertionError
 
 
-def generate(addr: str, number_of_requests: int, rate: float):
+def generate(number_of_requests: int, rate: float):
     interarrival_times = generate_interarrival_times(number_of_requests, rate)
-    images = load_images()
-    health_check(addr)
-
     predict_url = f"http://{addr}/predict"
 
-    def request(request_index: int):
+    def request(request_id: int, q):
         payload = {"image": random.choice(images)}
         data = {
-            "request_index": request_index,
-            "start": time.time()
+            "request_id": request_id,
+            "start": time.time() - session_start_time
         }
         r = requests.post(predict_url, files=payload)
-        data["end"] = time.time()
+        data["end"] = time.time() - session_start_time
         data["status_code"] = r.status_code
         data["response_text"] = r.text
-        return data
+        q.put_nowait(data)
 
-    futures = []
-    with ThreadPoolExecutor(max_workers=cpu_count() * 2) as executor:
+    q = queue.Queue()
+    session_start_time = time.time()
+    with ThreadPoolExecutor(max_workers=cpu_count() * 5) as executor:
         for i in range(number_of_requests):
             time.sleep(interarrival_times[i])
-            futures.append(executor.submit(request, i))
+            executor.submit(request, i, q)
 
-    with open(f"output/{time.strftime('%H%M%S')}-{number_of_requests}-{rate}.txt", "w") as fout:
-        for future in futures:
-            print(future.result(), file=fout)
-
-    health_check(addr)
+    results = [q.get() for _ in range(number_of_requests)]
+    results = sorted(results, key=operator.itemgetter("request_id"))
+    return results
 
 
 if __name__ == "__main__":
@@ -76,4 +72,8 @@ if __name__ == "__main__":
     addr = sys.argv[1]
     number_of_requests = int(sys.argv[2])
     rate = float(sys.argv[3])
-    generate(addr, number_of_requests, rate)
+    health_check()
+    results = generate(addr, number_of_requests, rate)
+    with open(f"output/{time.strftime('%H%M%S')}-{number_of_requests}-{rate}.txt", "w") as fout:
+        for r in results:
+            print(r, file=fout)
