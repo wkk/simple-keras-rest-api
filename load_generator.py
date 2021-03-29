@@ -40,6 +40,7 @@ def health_check() -> None:
 def generate(number_of_requests: int, rate: float):
     interarrival_times = generate_interarrival_times(number_of_requests, rate)
     predict_url = f"http://{addr}/predict"
+    worker_count = cpu_count() * 40
 
     def request(request_id: int, q):
         payload = {"image": random.choice(images)}
@@ -53,11 +54,23 @@ def generate(number_of_requests: int, rate: float):
         data["response_text"] = r.text
         q.put_nowait(data)
 
-    q = queue.Queue()
+    def dummy():
+        pass
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        start = time.time()
+        for i in range(10000):
+            executor.submit(dummy)
+        elapsed_time = time.time() - start
+    offset = elapsed_time / 10000
+
+    time.sleep(5)
+
     session_start_time = time.time()
-    with ThreadPoolExecutor(max_workers=cpu_count() * 5) as executor:
+    q = queue.Queue()
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
         for i in range(number_of_requests):
-            time.sleep(interarrival_times[i])
+            time.sleep(max(interarrival_times[i] - offset, 0))
             executor.submit(request, i, q)
 
     results = [q.get() for _ in range(number_of_requests)]
@@ -73,7 +86,7 @@ if __name__ == "__main__":
     number_of_requests = int(sys.argv[2])
     rate = float(sys.argv[3])
     health_check()
-    results = generate(addr, number_of_requests, rate)
+    results = generate(number_of_requests, rate)
     with open(f"output/{time.strftime('%H%M%S')}-{number_of_requests}-{rate}.txt", "w") as fout:
         for r in results:
             print(r, file=fout)
