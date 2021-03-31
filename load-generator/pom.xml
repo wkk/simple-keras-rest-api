@@ -42,7 +42,7 @@
         <version>${gatling-maven-plugin.version}</version>
         <configuration>
           <jvmArgs>
-            <jvmArg>-Xmx4g</jvmArg>
+            <jvmArg>-Xmx8g</jvmArg>
           </jvmArgs>
         </configuration>
       </plugin>
