@@ -28,5 +28,6 @@ object KerasRestApiScenario {
             .contentType("image/jpeg")).asMultipartForm
         .check(status is 200)
         .check(jsonPath("$.success") is "true")
+        .check(jsonPath("$.service_time") saveAs "serviceTime")
     )
 }
