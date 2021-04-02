@@ -2,10 +2,9 @@ package edu.umass.cs.lass.edge_modeling.scenarios
 
 import java.io.File
 import java.nio.file.Files
-import io.gatling.core.Predef.scenario
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import edu.umass.cs.lass.edge_modeling.config.Config.url
+import edu.umass.cs.lass.edge_modeling.config.Config.predictUrl
 
 import scala.util.Random
 
@@ -22,7 +21,7 @@ object KerasRestApiScenario {
     .feed(randomImages)
     .exec(
       http("post image")
-        .post(url)
+        .post(predictUrl)
         .bodyPart(
           ByteArrayBodyPart("image", "${randomImage}")
             .fileName("image.jpg")

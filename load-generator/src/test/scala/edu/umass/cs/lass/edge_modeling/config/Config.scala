@@ -11,9 +11,9 @@ object Config {
   val debug: Boolean = config.hasPath("debug")
 
   private val addr = config.getString("server_address")
-  val url = s"http://$addr/predict"
+  val predictUrl = s"http://$addr/predict"
 
-  val number_of_requests: Int = config.getInt("number_of_requests")
-  val request_rate: Double = config.getDouble("request_rate")
-  val duration: FiniteDuration = math.ceil(number_of_requests / request_rate) seconds
+  val numberOfRequests: Int = config.getInt("number_of_requests")
+  val requestRate: Double = config.getDouble("request_rate")
+  val duration: FiniteDuration = math.ceil(numberOfRequests / requestRate) seconds
 }
