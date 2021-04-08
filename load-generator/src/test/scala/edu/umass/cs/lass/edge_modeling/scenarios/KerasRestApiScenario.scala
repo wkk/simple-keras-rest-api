@@ -17,17 +17,21 @@ object KerasRestApiScenario {
     )
   )
 
-  val kerasRestApiScenario = scenario("Keras rest api")
-    .feed(randomImages)
-    .exec(
-      http("post image")
-        .post(predictUrl)
-        .bodyPart(
-          ByteArrayBodyPart("image", "${randomImage}")
-            .fileName("image.jpg")
-            .contentType("image/jpeg")).asMultipartForm
-        .check(status is 200)
-        .check(jsonPath("$.success") is "true")
-        .check(jsonPath("$.service_time") saveAs "serviceTime")
-    )
+  def buildScenario(scenarioName: String) = {
+    scenario(scenarioName)
+      .feed(randomImages)
+      .exec(
+        http("post image")
+          .post(predictUrl)
+          .bodyPart(
+            ByteArrayBodyPart("image", "${randomImage}")
+              .fileName("image.jpg")
+              .contentType("image/jpeg")).asMultipartForm
+          .check(status is 200)
+          .check(jsonPath("$.success") is "true")
+          .check(jsonPath("$.service_time") saveAs "serviceTime")
+      )
+  }
+
+  val kerasRestApiScenario = createScenario("Keras REST API")
 }

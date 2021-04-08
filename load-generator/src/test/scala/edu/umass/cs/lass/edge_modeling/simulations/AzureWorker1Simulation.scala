@@ -5,7 +5,7 @@ import io.gatling.core.Predef._
 import edu.umass.cs.lass.edge_modeling.scenarios.KerasRestApiScenario
 
 object AzureWorker1Simulation {
-  val worker1Exec = KerasRestApiScenario.kerasRestApiScenario
+  val worker1Exec = KerasRestApiScenario.buildScenario("Worker 1")
     .inject(
       constantUsersPerSec(8.72) during (1 minute) randomized,
       constantUsersPerSec(10.02) during (1 minute) randomized,
