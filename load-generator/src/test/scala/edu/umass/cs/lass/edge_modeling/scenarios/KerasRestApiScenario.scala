@@ -33,5 +33,5 @@ object KerasRestApiScenario {
       )
   }
 
-  val kerasRestApiScenario = createScenario("Keras REST API")
+  val kerasRestApiScenario = buildScenario("Keras REST API")
 }
