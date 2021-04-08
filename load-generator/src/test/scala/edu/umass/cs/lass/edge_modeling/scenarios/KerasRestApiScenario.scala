@@ -21,7 +21,7 @@ object KerasRestApiScenario {
     scenario(scenarioName)
       .feed(randomImages)
       .exec(
-        http("post image")
+        http(s"$scenarioName post image")
           .post(predictUrl)
           .bodyPart(
             ByteArrayBodyPart("image", "${randomImage}")
