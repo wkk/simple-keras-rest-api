@@ -5,28 +5,28 @@ import io.gatling.core.Predef._
 import edu.umass.cs.lass.edge_modeling.scenarios.KerasRestApiScenario
 
 object AzureWorker5Simulation {
-    val worker5Exec = KerasRestApiScenario.kerasRestApiScenario
-      .inject(
-          rampUsers(563) during(1 minute),
-          rampUsers(555) during(1 minute),
-          rampUsers(627) during(1 minute),
-          rampUsers(584) during(1 minute),
-          rampUsers(594) during(1 minute),
-          rampUsers(570) during(1 minute),
-          rampUsers(611) during(1 minute),
-          rampUsers(697) during(1 minute),
-          rampUsers(603) during(1 minute),
-          rampUsers(574) during(1 minute),
-          rampUsers(599) during(1 minute),
-          rampUsers(638) during(1 minute),
-          rampUsers(729) during(1 minute),
-          rampUsers(630) during(1 minute),
-          rampUsers(597) during(1 minute),
-          rampUsers(486) during(1 minute),
-          rampUsers(582) during(1 minute),
-          rampUsers(618) during(1 minute),
-          rampUsers(719) during(1 minute),
-          rampUsers(541) during(1 minute))
+  val worker5Exec = KerasRestApiScenario.kerasRestApiScenario
+    .inject(
+      constantUsersPerSec(9.38) during (1 minute) randomized,
+      constantUsersPerSec(9.25) during (1 minute) randomized,
+      constantUsersPerSec(10.45) during (1 minute) randomized,
+      constantUsersPerSec(9.73) during (1 minute) randomized,
+      constantUsersPerSec(9.90) during (1 minute) randomized,
+      constantUsersPerSec(9.50) during (1 minute) randomized,
+      constantUsersPerSec(10.18) during (1 minute) randomized,
+      constantUsersPerSec(11.62) during (1 minute) randomized,
+      constantUsersPerSec(10.05) during (1 minute) randomized,
+      constantUsersPerSec(9.57) during (1 minute) randomized,
+      constantUsersPerSec(9.98) during (1 minute) randomized,
+      constantUsersPerSec(10.63) during (1 minute) randomized,
+      constantUsersPerSec(12.15) during (1 minute) randomized,
+      constantUsersPerSec(10.50) during (1 minute) randomized,
+      constantUsersPerSec(9.95) during (1 minute) randomized,
+      constantUsersPerSec(8.10) during (1 minute) randomized,
+      constantUsersPerSec(9.70) during (1 minute) randomized,
+      constantUsersPerSec(10.30) during (1 minute) randomized,
+      constantUsersPerSec(11.98) during (1 minute) randomized,
+      constantUsersPerSec(9.02) during (1 minute) randomized)
 }
 
 class AzureWorker5Simulation extends Simulation {
