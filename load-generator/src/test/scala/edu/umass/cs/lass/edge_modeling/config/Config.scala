@@ -13,7 +13,17 @@ object Config {
   private val addr = config.getString("server_address")
   val predictUrl = s"http://$addr/predict"
 
-  val numberOfRequests: Int = config.getInt("number_of_requests")
-  val requestRate: Double = config.getDouble("request_rate")
+  val numberOfRequests: Int =
+    if (config.hasPath("number_of_requests"))
+      config.getInt("number_of_requests")
+    else
+      2000
+
+  val requestRate: Double = {
+    if (config.hasPath("request_rate"))
+      config.getDouble("request_rate")
+    else
+      10.0
+  }
   val duration: FiniteDuration = math.ceil(numberOfRequests / requestRate) seconds
 }
